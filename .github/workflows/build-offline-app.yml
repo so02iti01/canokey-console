@@ -1,0 +1,35 @@
+name: Build Offline Web App
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Install Rust build dependencies
+        run: cargo install flutter_rust_bridge_codegen cargo-bundle-licenses
+      - name: Get Flutter dependencies
+        run: flutter pub get
+      - name: Build Web Application
+        run: |
+          flutter_rust_bridge_codegen build-web --release
+          flutter build web
+
+      - name: Upload Web App Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: canokey-console-offline-web-app
+          path: build/web
+
