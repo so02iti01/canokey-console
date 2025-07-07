@@ -17,11 +17,17 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.32.5'
           channel: 'stable'
+          cache: true
+          
       - name: Install Rust build dependencies
         run: cargo install flutter_rust_bridge_codegen cargo-bundle-licenses
+      - name: Upgrade intl dependency
+        run: flutter pub add intl:^0.20.2
       - name: Get Flutter dependencies
         run: flutter pub get
+        
       - name: Build Web Application
         run: |
           flutter_rust_bridge_codegen build-web --release
